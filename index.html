@@ -21,6 +21,7 @@
     <nav class="nav" id="nav" role="tablist" aria-label="主导航">
       <button role="tab" data-view="overview"   aria-selected="true">首页</button>
       <button role="tab" data-view="knowledge"  aria-selected="false">知识要点</button>
+      <button role="tab" data-view="formulas"   aria-selected="false">公式大全</button>
       <button role="tab" data-view="examples"   aria-selected="false">典型例题</button>
       <button role="tab" data-view="practice"   aria-selected="false">练习自测</button>
       <button role="tab" data-view="wrong"      aria-selected="false">错题本</button>
@@ -43,7 +44,12 @@
       <button class="card entry" data-goto="knowledge">
         <div class="ico">📘</div>
         <h3>知识要点梳理</h3>
-        <p>十大章节的核心公式、判定定理与易错提醒，考前扫一遍比刷题管用。</p>
+        <p>十大章节的核心结论与易错提醒，考前扫一遍比刷题管用。</p>
+      </button>
+      <button class="card entry" data-goto="formulas">
+        <div class="ico">📐</div>
+        <h3>公式大全</h3>
+        <p>必修 + 选择性必修 18 个主题的公式速查，每条都注明含义、符号与适用条件，支持搜索。</p>
       </button>
       <button class="card entry" data-goto="examples">
         <div class="ico">💡</div>
@@ -65,6 +71,7 @@
     <div class="section-title">当前学习数据</div>
     <div class="stat-row">
       <div class="stat"><b id="stChapters">—</b><span>知识章节</span></div>
+      <div class="stat"><b id="stFormulas">—</b><span>公式条目</span></div>
       <div class="stat"><b id="stExamples">—</b><span>典型例题</span></div>
       <div class="stat"><b id="stExercises">—</b><span>练习题</span></div>
       <div class="stat"><b id="stWrong">—</b><span>错题本收录</span></div>
@@ -100,6 +107,27 @@
     <div class="kb-layout">
       <aside class="kb-side" id="kbSide" aria-label="章节导航"></aside>
       <div class="kb-body" id="kbBody"></div>
+    </div>
+  </section>
+
+  <!-- ========== 公式大全 ========== -->
+  <section class="view" id="view-formulas" hidden>
+    <div class="page-head">
+      <h1>高中数学公式大全</h1>
+      <p>覆盖必修第一册至选择性必修第三册共 18 个主题。每条公式都标注了<b>含义</b>、<b>符号说明</b>和<b>适用条件</b>——其中适用条件最容易被忽略，也最容易失分。</p>
+    </div>
+
+    <div class="search-bar">
+      <span class="s-ico">🔍</span>
+      <input id="fSearch" type="search" autocomplete="off"
+             placeholder="搜索公式名称、符号或关键词，例如：余弦定理、离心率、错位相减、a 的范围…">
+      <button class="btn sm" id="fClear" hidden>清空</button>
+    </div>
+    <div class="search-hint" id="fSearchInfo"></div>
+
+    <div class="kb-layout">
+      <aside class="kb-side" id="fSide" aria-label="公式章节导航"></aside>
+      <div class="kb-body" id="fBody"></div>
     </div>
   </section>
 
@@ -219,6 +247,7 @@
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="assets/js/data.js"></script>
+<script src="assets/js/formulas.js"></script>
 <script src="assets/js/app.js"></script>
 </body>
 </html>

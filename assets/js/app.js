@@ -20,7 +20,9 @@
     pracType: 'all',
     pracCh: 'all',
     wOwner: 'all',
-    wStatus: 'all'
+    wStatus: 'all',
+    fChapter: FORMULAS[0].id,
+    fQuery: ''
   };
 
   /* ---------------- 工具 ---------------- */
@@ -82,6 +84,11 @@
         if (CHAPTERS[i].id === parts[1]) { state.kb = parts[1]; break; }
       }
     }
+    if (v === 'formulas' && parts[1]) {
+      for (var j = 0; j < FORMULAS.length; j++) {
+        if (FORMULAS[j].id === parts[1]) { state.fChapter = parts[1]; break; }
+      }
+    }
     render();
   }
 
@@ -96,6 +103,7 @@
       b.setAttribute('aria-selected', String(b.dataset.view === state.view));
     });
     if (state.view === 'knowledge') renderKnowledge();
+    if (state.view === 'formulas')  renderFormulas();
     if (state.view === 'examples')  renderExamples();
     if (state.view === 'practice')  renderPractice();
     if (state.view === 'wrong')     renderWrong();
@@ -105,9 +113,115 @@
   /* ---------------- 首页统计 ---------------- */
   function renderStats() {
     $('#stChapters').textContent  = CHAPTERS.length;
+    $('#stFormulas').textContent  = formulaCount();
     $('#stExamples').textContent  = EXAMPLES.length;
     $('#stExercises').textContent = EXERCISES.length;
     $('#stWrong').textContent     = loadWrong().length;
+  }
+
+  /* ---------------- 公式大全 ---------------- */
+  function formulaCount() {
+    var n = 0;
+    FORMULAS.forEach(function (c) { n += c.items.length; });
+    return n;
+  }
+  /* 去掉 HTML 标签后再匹配，避免标签名干扰搜索 */
+  function plain(s) { return String(s == null ? '' : s).replace(/<[^>]*>/g, ''); }
+  function fMatch(it, q) {
+    return (plain(it.t) + ' ' + plain(it.f) + ' ' + plain(it.mean) + ' ' +
+            plain(it.sym) + ' ' + plain(it.cond)).toLowerCase().indexOf(q) >= 0;
+  }
+  function fCard(it) {
+    return '<div class="f-card">' +
+      '<div class="f-name">' + esc(it.t) + '</div>' +
+      '<div class="f-expr">' + it.f + '</div>' +
+      '<dl class="f-meta">' +
+        '<div><dt>含义</dt><dd>' + it.mean + '</dd></div>' +
+        '<div><dt>符号</dt><dd>' + it.sym + '</dd></div>' +
+        '<div class="f-cond"><dt>适用条件</dt><dd>' + it.cond + '</dd></div>' +
+      '</dl>' +
+    '</div>';
+  }
+
+  function renderFormulas() {
+    var q = state.fQuery.trim().toLowerCase();
+    var i;
+
+    /* 侧栏：搜索时显示各章命中条数，无命中的置灰 */
+    var counts = FORMULAS.map(function (c) {
+      var n = 0;
+      c.items.forEach(function (it) { if (!q || fMatch(it, q)) n++; });
+      return n;
+    });
+    $('#fSide').innerHTML = '<div class="side-label">章节</div>' + FORMULAS.map(function (c, k) {
+      var dim = q && !counts[k];
+      return '<button data-ch="' + c.id + '"' +
+             (c.id === state.fChapter && !q ? ' aria-current="true"' : '') +
+             (dim ? ' class="dim"' : '') + '>' +
+             '<span class="no">' + c.no + '</span><span>' + esc(c.name) + '</span>' +
+             (q ? '<span class="cnt">' + counts[k] + '</span>' : '') +
+             '</button>';
+    }).join('');
+
+    $$('#fSide button').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var target = b.dataset.ch;
+        state.fQuery = '';
+        $('#fSearch').value = '';
+        $('#fClear').hidden = true;
+        if (state.fChapter === target) { renderFormulas(); }
+        else { state.fChapter = target; go('formulas', target); }
+      });
+    });
+
+    var body = $('#fBody');
+
+    /* 搜索模式：跨章节列出全部命中结果 */
+    if (q) {
+      var html = '', total = 0;
+      FORMULAS.forEach(function (c) {
+        var hit = c.items.filter(function (it) { return fMatch(it, q); });
+        if (!hit.length) return;
+        total += hit.length;
+        html += '<div class="f-group-head"><span>' + c.no + '. ' + esc(c.name) + '</span>' +
+                '<span class="chip">' + hit.length + ' 条</span></div>' +
+                hit.map(fCard).join('');
+      });
+      $('#fSearchInfo').innerHTML = total
+        ? '共找到 <b>' + total + '</b> 条相关公式'
+        : '';
+      body.innerHTML = total ? html
+        : '<div class="empty"><div class="big">🔍</div>没有匹配「' + esc(state.fQuery) +
+          '」的公式。<br>换个关键词试试，比如"余弦定理""离心率""错位相减"。</div>';
+      return;
+    }
+
+    /* 浏览模式：只显示当前章节 */
+    $('#fSearchInfo').innerHTML = '';
+    var cur = FORMULAS[0];
+    for (i = 0; i < FORMULAS.length; i++) {
+      if (FORMULAS[i].id === state.fChapter) { cur = FORMULAS[i]; break; }
+    }
+    var idx = FORMULAS.indexOf(cur);
+    var prev = FORMULAS[idx - 1], next = FORMULAS[idx + 1];
+
+    html = '<div class="kb-title"><h2>' + cur.no + '. ' + esc(cur.name) + '</h2>' +
+           '<span class="chip accent">' + esc(cur.book) + '</span>' +
+           '<span class="chip">' + cur.items.length + ' 条公式</span></div>' +
+           '<div class="kb-desc">每条公式都标注了含义、符号说明与适用条件</div>' +
+           cur.items.map(fCard).join('') +
+           '<div class="btn-row" style="margin-top:18px">' +
+             (prev ? '<button class="btn" data-go-f="' + prev.id + '">← ' + esc(prev.name) + '</button>' : '') +
+             (next ? '<button class="btn primary" data-go-f="' + next.id + '" style="margin-left:auto">' + esc(next.name) + ' →</button>' : '') +
+           '</div>';
+
+    body.innerHTML = html;
+    $$('#fBody [data-go-f]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        state.fChapter = b.dataset.goF;
+        go('formulas', b.dataset.goF);
+      });
+    });
   }
 
   /* ---------------- 知识要点 ---------------- */
@@ -615,6 +729,27 @@
     $$('[data-goto]').forEach(function (b) {
       b.addEventListener('click', function () { go(b.dataset.goto); });
     });
+    /* 公式大全：搜索（带防抖，避免每敲一个字就重渲染整页） */
+    var si = $('#fSearch'), fTimer;
+    si.addEventListener('input', function () {
+      $('#fClear').hidden = !si.value;
+      clearTimeout(fTimer);
+      fTimer = setTimeout(function () {
+        state.fQuery = si.value;
+        renderFormulas();
+      }, 120);
+    });
+    si.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { si.value = ''; state.fQuery = ''; $('#fClear').hidden = true; renderFormulas(); }
+    });
+    $('#fClear').addEventListener('click', function () {
+      si.value = '';
+      state.fQuery = '';
+      $('#fClear').hidden = true;
+      renderFormulas();
+      si.focus();
+    });
+
     $('#openAllSol').addEventListener('click', function () {
       $$('#pracList details.acc').forEach(function (d) { d.open = true; });
     });
