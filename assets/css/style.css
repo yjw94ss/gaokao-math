@@ -93,7 +93,8 @@ sub { vertical-align: sub; }
 .frac {
   display: inline-flex;
   flex-direction: column;
-  vertical-align: -0.48em;
+  /* 分数线与等号同轴：middle 对齐父级 x-height 中线，等价于数学轴 */
+  vertical-align: middle;
   text-align: center;
   font-size: .92em;
   line-height: 1.2;
