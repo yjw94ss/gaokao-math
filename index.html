@@ -36,9 +36,17 @@
 
   <!-- ========== 首页 ========== -->
   <section class="view" id="view-overview">
-    <div class="page-head">
+    <div class="hero">
       <h1>高三数学，从"梳理"到"消化"</h1>
       <p>先把知识要点过一遍，再看典型例题怎么想，然后动笔练，最后把错的收进错题本反复看。这四步就是提分的全部秘密。</p>
+      <div class="hero-stats">
+        <div class="hstat"><b id="stChapters">—</b><span>知识章节</span></div>
+        <div class="hstat"><b id="stFormulas">—</b><span>公式条目</span></div>
+        <div class="hstat"><b id="stExamples">—</b><span>典型例题</span></div>
+        <div class="hstat"><b id="stExercises">—</b><span>练习题</span></div>
+        <div class="hstat"><b id="stAdvanced">—</b><span>压轴竞赛题</span></div>
+        <div class="hstat"><b id="stWrong">—</b><span>错题本收录</span></div>
+      </div>
     </div>
 
     <div class="entry-grid">
@@ -72,16 +80,6 @@
         <h3>错题整理</h3>
         <p>记下做错的题与错因。学生导出文件交给老师，老师导入多个文件即可看全班汇总。</p>
       </button>
-    </div>
-
-    <div class="section-title">当前学习数据</div>
-    <div class="stat-row">
-      <div class="stat"><b id="stChapters">—</b><span>知识章节</span></div>
-      <div class="stat"><b id="stFormulas">—</b><span>公式条目</span></div>
-      <div class="stat"><b id="stExamples">—</b><span>典型例题</span></div>
-      <div class="stat"><b id="stExercises">—</b><span>练习题</span></div>
-      <div class="stat"><b id="stAdvanced">—</b><span>压轴竞赛题</span></div>
-      <div class="stat"><b id="stWrong">—</b><span>错题本收录</span></div>
     </div>
 
     <div class="section-title">怎么用这个站</div>
@@ -235,8 +233,8 @@
       </div>
     </form>
 
-    <div class="section-title" style="justify-content:space-between">
-      <span style="display:flex;align-items:center;gap:10px">错题列表 <span class="chip" id="wrongCount">0 条</span></span>
+    <div class="section-title">
+      错题列表 <span class="chip" id="wrongCount">0 条</span>
     </div>
 
     <div class="stat-row" id="wrongStats" hidden>
