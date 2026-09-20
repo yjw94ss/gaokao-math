@@ -248,6 +248,10 @@ main {
   grid-template-columns: repeat(auto-fit, minmax(205px, 1fr));
   gap: 14px;
 }
+/* 宽屏固定 3 列：入口卡共 6 张，3×2 比自动铺满更整齐 */
+@media (min-width: 1000px) {
+  .entry-grid { grid-template-columns: repeat(3, 1fr); }
+}
 .entry {
   text-align: left;
   cursor: pointer;
@@ -559,6 +563,115 @@ html[data-theme="dark"] details.acc > summary { color: var(--primary-2); }
   border-left: 3px solid var(--warn);
   line-height: 1.85;
 }
+
+/* ---------- 压轴题与竞赛题 ---------- */
+.filter-bar .fgroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  align-items: center;
+}
+.filter-bar .fgroup + .fgroup {
+  flex-basis: 100%;
+  padding-top: 9px;
+  border-top: 1px dashed var(--border);
+}
+
+.adv-card { border-left: 3px solid var(--err); }
+
+.adv-src {
+  font-size: 12.5px;
+  color: var(--text-3);
+  margin: -6px 0 11px;
+  letter-spacing: .2px;
+}
+
+/* 一眼看穿：整道题最重要的一句话，做成最醒目的块 */
+.adv-idea {
+  display: flex;
+  gap: 11px;
+  align-items: flex-start;
+  padding: 13px 15px;
+  border-radius: var(--radius-sm);
+  background: var(--primary-soft);
+  margin-bottom: 12px;
+  font-size: 14.4px;
+  line-height: 1.9;
+  color: var(--text);
+}
+.adv-idea-tag {
+  flex: none;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: .5px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--primary);
+  color: #fff;
+  white-space: nowrap;
+  margin-top: 4px;
+}
+.adv-idea b { color: var(--primary); }
+html[data-theme="dark"] .adv-idea b { color: var(--primary-2); }
+
+/* 展开后的分块标题 */
+.adv-sec { margin-top: 17px; }
+.adv-sec:first-child { margin-top: 2px; }
+.adv-sec > h4 {
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: .4px;
+  color: var(--text);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.adv-sec > h4::before {
+  content: "";
+  width: 3px;
+  height: 13px;
+  border-radius: 2px;
+  background: var(--primary);
+  flex: none;
+}
+.adv-sec > p {
+  margin: 0 0 9px;
+  font-size: 14.4px;
+  line-height: 2;
+}
+.adv-sec > p:last-child { margin-bottom: 0; }
+
+/* 方法提炼：名称 + 说明的两栏条 */
+.adv-method {
+  display: flex;
+  gap: 11px;
+  padding: 10px 13px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  margin-bottom: 8px;
+  font-size: 13.8px;
+  line-height: 1.85;
+}
+.adv-method:last-child { margin-bottom: 0; }
+.adv-method > b {
+  flex: none;
+  width: 92px;
+  color: var(--accent);
+  font-size: 13.2px;
+}
+.adv-method > span { flex: 1; min-width: 0; }
+.adv-method > span b { color: var(--text); }
+
+/* 举一反三：与答案区分开，用绿色系 */
+.adv-extend > h4::before { background: var(--ok); }
+.adv-extend > p {
+  padding: 12px 15px;
+  border-radius: var(--radius-sm);
+  background: var(--ok-soft);
+  border-left: 3px solid var(--ok);
+}
+.adv-extend b { color: var(--ok); }
 
 /* ---------- 练习 ---------- */
 .filter-bar {
@@ -982,6 +1095,12 @@ footer {
   .ex-card { padding: 15px 15px; }
   .ex-item { padding: 14px 15px; }
   .ex-q { font-size: 14.5px; padding: 12px 13px; line-height: 1.95; }
+  /* 压轴题：方法条在窄屏改为上下排列，标签不再占固定宽度 */
+  .adv-idea { flex-direction: column; gap: 8px; padding: 12px 13px; font-size: 14.2px; }
+  .adv-idea-tag { margin-top: 0; align-self: flex-start; }
+  .adv-method { flex-direction: column; gap: 4px; }
+  .adv-method > b { width: auto; }
+  .adv-sec > p { font-size: 14.2px; }
   .opts { grid-template-columns: 1fr; gap: 2px; }
   .field-row { grid-template-columns: 1fr; }
   .entry { padding: 16px; }

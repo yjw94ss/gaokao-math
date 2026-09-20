@@ -22,7 +22,9 @@
     wOwner: 'all',
     wStatus: 'all',
     fChapter: FORMULAS[0].id,
-    fQuery: ''
+    fQuery: '',
+    advCh: 'all',
+    advLv: 'all'
   };
 
   /* ---------------- 工具 ---------------- */
@@ -105,6 +107,7 @@
     if (state.view === 'knowledge') renderKnowledge();
     if (state.view === 'formulas')  renderFormulas();
     if (state.view === 'examples')  renderExamples();
+    if (state.view === 'advanced')  renderAdvanced();
     if (state.view === 'practice')  renderPractice();
     if (state.view === 'wrong')     renderWrong();
     if (state.view === 'overview')  renderStats();
@@ -116,6 +119,7 @@
     $('#stFormulas').textContent  = formulaCount();
     $('#stExamples').textContent  = EXAMPLES.length;
     $('#stExercises').textContent = EXERCISES.length;
+    $('#stAdvanced').textContent  = ADVANCED.length;
     $('#stWrong').textContent     = loadWrong().length;
   }
 
@@ -305,6 +309,88 @@
               '<ol>' + e.steps.map(function (s) { return '<li>' + s + '</li>'; }).join('') + '</ol>' +
               '<div class="ans-line"><strong>答案　</strong>' + e.ans + '</div>' +
               '<div class="key-line"><b>关键提醒　</b>' + e.key + '</div>' +
+            '</div>' +
+          '</details>' +
+        '</div>';
+    }).join('');
+  }
+
+  /* ---------------- 压轴题与竞赛题 ---------------- */
+  function advTopicName(id) {
+    for (var i = 0; i < ADV_TOPICS.length; i++) {
+      if (ADV_TOPICS[i].id === id) return ADV_TOPICS[i].name;
+    }
+    return '其他';
+  }
+
+  function renderAdvanced() {
+    var chOpts = [{ id: 'all', name: '全部知识点' }].concat(ADV_TOPICS.map(function (t) {
+      return { id: t.id, name: t.name };
+    }));
+    var lvOpts = [
+      { id: 'all', name: '全部难度' },
+      { id: '3', name: '★★★ 高考压轴' },
+      { id: '4', name: '★★★★ 竞赛一试' },
+      { id: '5', name: '★★★★★ 竞赛二试' }
+    ];
+
+    $('#advFilter').innerHTML =
+      '<div class="fgroup">' + chOpts.map(function (o) {
+        return '<button class="fbtn" data-a="ch" data-v="' + o.id + '" aria-pressed="' +
+               String(o.id === state.advCh) + '">' + esc(o.name) + '</button>';
+      }).join('') + '</div>' +
+      '<div class="fgroup">' + lvOpts.map(function (o) {
+        return '<button class="fbtn" data-a="lv" data-v="' + o.id + '" aria-pressed="' +
+               String(o.id === state.advLv) + '">' + o.name + '</button>';
+      }).join('') + '</div>';
+
+    $$('#advFilter .fbtn').forEach(function (b) {
+      b.addEventListener('click', function () {
+        if (b.dataset.a === 'ch') state.advCh = b.dataset.v;
+        else                      state.advLv = b.dataset.v;
+        renderAdvanced();
+      });
+    });
+
+    $('#advCount').textContent = ADVANCED.length;
+
+    var list = ADVANCED.filter(function (e) {
+      return (state.advCh === 'all' || e.ch === state.advCh) &&
+             (state.advLv === 'all' || String(e.level) === state.advLv);
+    });
+
+    if (!list.length) {
+      $('#advList').innerHTML = '<div class="empty"><div class="big">📭</div>当前筛选条件下没有题目</div>';
+      return;
+    }
+
+    $('#advList').innerHTML = list.map(function (e) {
+      var lv = ADV_LEVELS[e.level];
+      var deepHtml = (e.deep || []).map(function (p) { return '<p>' + p + '</p>'; }).join('');
+      var methodHtml = (e.methods || []).map(function (m) {
+        return '<div class="adv-method"><b>' + m.n + '</b><span>' + m.d + '</span></div>';
+      }).join('');
+      return '' +
+        '<div class="ex-card adv-card">' +
+          '<div class="ex-head">' +
+            '<h3>' + esc(e.title) + '</h3>' +
+            '<span class="chip accent">' + esc(advTopicName(e.ch)) + '</span>' +
+            '<span class="chip ' + lv.cls + '">' + lv.label + '</span>' +
+          '</div>' +
+          (e.src ? '<div class="adv-src">来源 · ' + esc(e.src) + '</div>' : '') +
+          '<div class="ex-q">' + e.q + '</div>' +
+          '<div class="adv-idea"><span class="adv-idea-tag">一眼看穿</span><div>' + e.idea + '</div></div>' +
+          '<details class="acc">' +
+            '<summary>展开：思想剖析 · 解题过程 · 方法提炼</summary>' +
+            '<div class="acc-body">' +
+              '<div class="adv-sec"><h4>思想剖析</h4>' + deepHtml + '</div>' +
+              '<div class="adv-sec"><h4>解题过程</h4><ol>' +
+                e.steps.map(function (s) { return '<li>' + s + '</li>'; }).join('') +
+              '</ol></div>' +
+              '<div class="adv-sec"><h4>方法提炼</h4>' + methodHtml + '</div>' +
+              '<div class="ans-line"><strong>答案　</strong>' + e.ans + '</div>' +
+              '<div class="adv-sec adv-extend"><h4>举一反三</h4><p>' + e.extend + '</p></div>' +
+              (e.warn ? '<div class="key-line"><b>易错提醒　</b>' + e.warn + '</div>' : '') +
             '</div>' +
           '</details>' +
         '</div>';
@@ -755,6 +841,12 @@
     });
     $('#closeAllSol').addEventListener('click', function () {
       $$('#pracList details.acc').forEach(function (d) { d.open = false; });
+    });
+    $('#advOpenAll').addEventListener('click', function () {
+      $$('#advList details.acc').forEach(function (d) { d.open = true; });
+    });
+    $('#advCloseAll').addEventListener('click', function () {
+      $$('#advList details.acc').forEach(function (d) { d.open = false; });
     });
     window.addEventListener('hashchange', parseHash);
   }

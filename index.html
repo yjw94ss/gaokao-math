@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#4f46e5">
-<meta name="description" content="高三数学学习站：知识要点梳理、典型例题讲解、分层练习自测与错题本，适配手机与电脑。">
-<title>高三数学学习站 · 要点 · 例题 · 练习 · 错题本</title>
+<meta name="description" content="高三数学学习站：知识要点梳理、公式大全、典型例题讲解、压轴题与竞赛题精讲、分层练习自测与错题本，适配手机与电脑。">
+<title>高三数学学习站 · 要点 · 公式 · 例题 · 压轴竞赛 · 练习 · 错题本</title>
 <link rel="stylesheet" href="assets/css/style.css">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%234f46e5'/><text y='72' x='50' text-anchor='middle' font-size='58' fill='white' font-family='Georgia'>∑</text></svg>">
 </head>
@@ -15,7 +15,7 @@
   <div class="topbar-inner">
     <div class="brand">
       <div class="logo">∑</div>
-      <span class="t">高三数学学习站<small>要点 · 例题 · 练习 · 错题本</small></span>
+      <span class="t">高三数学学习站<small>要点 · 公式 · 例题 · 压轴竞赛 · 错题本</small></span>
     </div>
 
     <nav class="nav" id="nav" role="tablist" aria-label="主导航">
@@ -24,6 +24,7 @@
       <button role="tab" data-view="formulas"   aria-selected="false">公式大全</button>
       <button role="tab" data-view="examples"   aria-selected="false">典型例题</button>
       <button role="tab" data-view="practice"   aria-selected="false">练习自测</button>
+      <button role="tab" data-view="advanced"   aria-selected="false">压轴·竞赛</button>
       <button role="tab" data-view="wrong"      aria-selected="false">错题本</button>
     </nav>
 
@@ -61,6 +62,11 @@
         <h3>练习与解析</h3>
         <p>选择、填空、解答三种题型，先自己做，再点开解析对照，逐题标注难度。</p>
       </button>
+      <button class="card entry" data-goto="advanced">
+        <div class="ico">🏔️</div>
+        <h3>压轴题与竞赛题</h3>
+        <p>高考压轴与竞赛一试、二试共 16 道。每题讲透背后的数学思想，而不只是给出解法。</p>
+      </button>
       <button class="card entry" data-goto="wrong">
         <div class="ico">📕</div>
         <h3>错题整理</h3>
@@ -74,6 +80,7 @@
       <div class="stat"><b id="stFormulas">—</b><span>公式条目</span></div>
       <div class="stat"><b id="stExamples">—</b><span>典型例题</span></div>
       <div class="stat"><b id="stExercises">—</b><span>练习题</span></div>
+      <div class="stat"><b id="stAdvanced">—</b><span>压轴竞赛题</span></div>
       <div class="stat"><b id="stWrong">—</b><span>错题本收录</span></div>
     </div>
 
@@ -153,6 +160,22 @@
       <button class="btn sm" id="closeAllSol">收起全部解析</button>
     </div>
     <div id="pracList"></div>
+  </section>
+
+  <!-- ========== 压轴题与竞赛题 ========== -->
+  <section class="view" id="view-advanced" hidden>
+    <div class="page-head">
+      <h1>压轴题与竞赛题</h1>
+      <p>共 <span id="advCount">0</span> 道，覆盖高考压轴、竞赛一试与二试三个层次。每题都拆成六块：<b>一眼看穿</b>（这道题真正在考什么）、<b>思想剖析</b>（为什么会想到这么做）、<b>解题过程</b>、<b>方法提炼</b>（能迁移到别处的工具）、<b>答案</b>、<b>举一反三</b>。</p>
+      <p style="margin-top:-6px"><b>建议看法</b>：先只读"题目"和"一眼看穿"，自己试着想几分钟，再看"思想剖析"。<b>这类题的价值在于思想，不在解法</b> —— 解法会忘，思想会留下。</p>
+    </div>
+
+    <div class="filter-bar" id="advFilter"></div>
+    <div class="btn-row" style="margin-bottom:14px">
+      <button class="btn sm" id="advOpenAll">展开全部思路</button>
+      <button class="btn sm" id="advCloseAll">收起全部思路</button>
+    </div>
+    <div id="advList"></div>
   </section>
 
   <!-- ========== 错题本 ========== -->
@@ -248,6 +271,7 @@
 
 <script src="assets/js/data.js"></script>
 <script src="assets/js/formulas.js"></script>
+<script src="assets/js/advanced.js"></script>
 <script src="assets/js/app.js"></script>
 </body>
 </html>
