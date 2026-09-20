@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#4f46e5">
+<meta name="description" content="高三数学学习站：知识要点梳理、典型例题讲解、分层练习自测与错题本，适配手机与电脑。">
+<title>高三数学学习站 · 要点 · 例题 · 练习 · 错题本</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%234f46e5'/><text y='72' x='50' text-anchor='middle' font-size='58' fill='white' font-family='Georgia'>∑</text></svg>">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="logo">∑</div>
+      <span class="t">高三数学学习站<small>要点 · 例题 · 练习 · 错题本</small></span>
+    </div>
+
+    <nav class="nav" id="nav" role="tablist" aria-label="主导航">
+      <button role="tab" data-view="overview"   aria-selected="true">首页</button>
+      <button role="tab" data-view="knowledge"  aria-selected="false">知识要点</button>
+      <button role="tab" data-view="examples"   aria-selected="false">典型例题</button>
+      <button role="tab" data-view="practice"   aria-selected="false">练习自测</button>
+      <button role="tab" data-view="wrong"      aria-selected="false">错题本</button>
+    </nav>
+
+    <button class="icon-btn" id="themeBtn" title="切换深色 / 浅色" aria-label="切换深色浅色主题">🌙</button>
+  </div>
+</header>
+
+<main>
+
+  <!-- ========== 首页 ========== -->
+  <section class="view" id="view-overview">
+    <div class="page-head">
+      <h1>高三数学，从"梳理"到"消化"</h1>
+      <p>先把知识要点过一遍，再看典型例题怎么想，然后动笔练，最后把错的收进错题本反复看。这四步就是提分的全部秘密。</p>
+    </div>
+
+    <div class="entry-grid">
+      <button class="card entry" data-goto="knowledge">
+        <div class="ico">📘</div>
+        <h3>知识要点梳理</h3>
+        <p>十大章节的核心公式、判定定理与易错提醒，考前扫一遍比刷题管用。</p>
+      </button>
+      <button class="card entry" data-goto="examples">
+        <div class="ico">💡</div>
+        <h3>典型例题讲解</h3>
+        <p>每题都给"怎么想 → 怎么做 → 关键在哪"，重点讲思路的来源，不只是答案。</p>
+      </button>
+      <button class="card entry" data-goto="practice">
+        <div class="ico">✏️</div>
+        <h3>练习与解析</h3>
+        <p>选择、填空、解答三种题型，先自己做，再点开解析对照，逐题标注难度。</p>
+      </button>
+      <button class="card entry" data-goto="wrong">
+        <div class="ico">📕</div>
+        <h3>错题整理</h3>
+        <p>把做错的题记下来，写清错因和正解。数据存在本机浏览器里，不上传、不丢失。</p>
+      </button>
+    </div>
+
+    <div class="section-title">当前学习数据</div>
+    <div class="stat-row">
+      <div class="stat"><b id="stChapters">—</b><span>知识章节</span></div>
+      <div class="stat"><b id="stExamples">—</b><span>典型例题</span></div>
+      <div class="stat"><b id="stExercises">—</b><span>练习题</span></div>
+      <div class="stat"><b id="stWrong">—</b><span>错题本收录</span></div>
+    </div>
+
+    <div class="section-title">怎么用这个站</div>
+    <div class="card" style="padding:18px 20px">
+      <div class="point" style="border:0;padding:0 0 14px;background:none">
+        <h4>一、先建框架，再填细节</h4>
+        <div class="body">知识要点按章节排好，每章开头是核心公式，末尾是"易错提醒"。第一遍通读，把不熟的公式在纸上默写一遍，比反复看有效得多。</div>
+      </div>
+      <div class="point" style="border:0;padding:0 0 14px;background:none">
+        <h4>二、例题重点看"为什么这么想"</h4>
+        <div class="body">每道例题都有"思路"栏。真正要学的是从题目条件到解题方向的那一步跳跃——比如看到"两边一对角"就该警觉可能有两解，看到"等差×等比"就该想到错位相减。</div>
+      </div>
+      <div class="point" style="border:0;padding:0 0 14px;background:none">
+        <h4>三、练习要计时，解析要精读</h4>
+        <div class="body">先自己动手写完整过程，再展开解析。对答案时不要只看结果对不对，要看过程里有没有跳步、有没有漏讨论。</div>
+      </div>
+      <div class="point" style="border:0;padding:0;background:none">
+        <h4>四、错题本贵精不贵多</h4>
+        <div class="body">只收"真错"的题：会做但算错的、思路卡住的、完全没思路的。每道题写清楚错因，隔三天重做一次，做对了就标记"已掌握"。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== 知识要点 ========== -->
+  <section class="view" id="view-knowledge" hidden>
+    <div class="page-head">
+      <h1>知识要点梳理</h1>
+      <p>按高考主干章节整理，每章含核心结论与易错提醒。手机上可左右滑动切换章节。</p>
+    </div>
+    <div class="kb-layout">
+      <aside class="kb-side" id="kbSide" aria-label="章节导航"></aside>
+      <div class="kb-body" id="kbBody"></div>
+    </div>
+  </section>
+
+  <!-- ========== 典型例题 ========== -->
+  <section class="view" id="view-examples" hidden>
+    <div class="page-head">
+      <h1>典型例题讲解</h1>
+      <p>覆盖各章节的代表性题目，先自己想想再看解答。解析默认收起，避免"一眼看到答案"。</p>
+    </div>
+    <div class="filter-bar" id="exFilter"></div>
+    <div id="exList"></div>
+  </section>
+
+  <!-- ========== 练习自测 ========== -->
+  <section class="view" id="view-practice" hidden>
+    <div class="page-head">
+      <h1>练习与答案解析</h1>
+      <p>共 <span id="pracCount">0</span> 题。先独立完成，再点"查看解析"逐题核对。</p>
+    </div>
+    <div class="filter-bar" id="pracFilter"></div>
+    <div class="btn-row" style="margin-bottom:14px">
+      <button class="btn sm" id="openAllSol">展开全部解析</button>
+      <button class="btn sm" id="closeAllSol">收起全部解析</button>
+    </div>
+    <div id="pracList"></div>
+  </section>
+
+  <!-- ========== 错题本 ========== -->
+  <section class="view" id="view-wrong" hidden>
+    <div class="page-head">
+      <h1>错题整理</h1>
+      <p>记录错题、错因与正确解法。数据保存在本机浏览器中，换设备不会同步，可用"导出"备份。</p>
+    </div>
+
+    <form class="wrong-form" id="wrongForm">
+      <div class="field">
+        <label for="wq">题目 <span class="hint">（必填，可写题干或题目来源）</span></label>
+        <textarea id="wq" required placeholder="例：已知 f(x)=ln x − ax，讨论单调性"></textarea>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="wsrc">来源 <span class="hint">（选填）</span></label>
+          <input id="wsrc" placeholder="例：周测卷 第 21 题">
+        </div>
+        <div class="field">
+          <label for="wch">所属章节 <span class="hint">（选填）</span></label>
+          <select id="wch"><option value="">未分类</option></select>
+        </div>
+      </div>
+      <div class="field">
+        <label for="wcause">错因 <span class="hint">（为什么错？这一步最重要）</span></label>
+        <textarea id="wcause" placeholder="例：忘记讨论 a&gt;0 与 a≤0 两种情况"></textarea>
+      </div>
+      <div class="field">
+        <label for="wfix">正确解法 <span class="hint">（选填）</span></label>
+        <textarea id="wfix" placeholder="例：f'(x)=1/x − a，分 a≤0 和 a&gt;0 讨论…"></textarea>
+      </div>
+      <div class="btn-row">
+        <button type="submit" class="btn primary">加入错题本</button>
+        <button type="reset" class="btn">清空表单</button>
+      </div>
+    </form>
+
+    <div class="section-title" style="justify-content:space-between">
+      <span style="display:flex;align-items:center;gap:10px">错题列表 <span class="chip" id="wrongCount">0 条</span></span>
+    </div>
+    <div class="btn-row" style="margin-bottom:14px">
+      <button class="btn sm" id="exportWrong">导出为文本</button>
+      <button class="btn sm" id="clearDone">清除已掌握</button>
+      <button class="btn sm danger" id="clearAll">清空全部</button>
+    </div>
+    <div id="wrongList"></div>
+  </section>
+
+</main>
+
+<footer>
+  <div>高三数学学习站 · 纯静态页面，无需联网即可使用（首次打开需联网加载一次）</div>
+  <div>内容仅供学习参考，请以教材与考试说明为准。</div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
