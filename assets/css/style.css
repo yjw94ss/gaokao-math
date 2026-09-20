@@ -632,6 +632,43 @@ html[data-theme="dark"] details.acc > summary { color: var(--primary-2); }
 .sol-body b { color: var(--text); }
 
 /* ---------- 错题本 ---------- */
+.owner-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  margin-bottom: 14px;
+}
+.owner-bar label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-2);
+  flex: none;
+}
+.owner-bar input {
+  flex: 1;
+  min-width: 160px;
+  font: inherit;
+  font-size: 14.5px;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  transition: border-color .15s, background .15s;
+}
+.owner-bar input:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: var(--surface);
+}
+
+#wrongStats { margin-bottom: 14px; }
+
 .wrong-form {
   padding: 18px 20px;
   border-radius: var(--radius);
@@ -831,6 +868,9 @@ footer {
   .entry-grid { gap: 11px; }
   .stat b { font-size: 21px; }
   .wrong-form { padding: 15px; }
+  .owner-bar { padding: 12px; gap: 8px; }
+  .owner-bar label { width: 100%; }
+  .owner-bar input { min-width: 0; font-size: 16px; }
   .acc-body { font-size: 14.2px; }
   .ans-line, .key-line { font-size: 14px; }
 }

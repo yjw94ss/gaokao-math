@@ -58,7 +58,7 @@
       <button class="card entry" data-goto="wrong">
         <div class="ico">📕</div>
         <h3>错题整理</h3>
-        <p>把做错的题记下来，写清错因和正解。数据存在本机浏览器里，不上传、不丢失。</p>
+        <p>记下做错的题与错因。学生导出文件交给老师，老师导入多个文件即可看全班汇总。</p>
       </button>
     </div>
 
@@ -131,8 +131,29 @@
   <section class="view" id="view-wrong" hidden>
     <div class="page-head">
       <h1>错题整理</h1>
-      <p>记录错题、错因与正确解法。数据保存在本机浏览器中，换设备不会同步，可用"导出"备份。</p>
+      <p>学生录自己的错题，导出成文件交给老师；老师把多个文件导入，就能看到全班汇总。数据只在各自浏览器里，不上传服务器。</p>
     </div>
+
+    <div class="owner-bar">
+      <label for="ownerName">当前使用者</label>
+      <input id="ownerName" maxlength="20" placeholder="填你的名字，之后录入的错题会标记归属">
+      <span class="chip" id="ownerHint">未设置</span>
+    </div>
+
+    <details class="acc" style="margin-bottom:14px">
+      <summary>怎么用？（学生和老师各看一遍）</summary>
+      <div class="acc-body">
+        <b>学生</b><br>
+        1. 在「当前使用者」里填自己的名字<br>
+        2. 录错题，点「加入错题本」<br>
+        3. 攒够之后点「导出发给老师」，会下载一个 json 文件，用微信或 QQ 发给老师<br><br>
+        <b>老师</b><br>
+        1. 点「导入学生错题」，可以一次选多个文件（按住 Ctrl / ⌘ 多选）<br>
+        2. 导入后下面就是全班汇总，可按学生、按章节筛选<br>
+        3. 同一个文件重复导入不会产生重复数据，放心导<br><br>
+        <b>提醒</b>：导出的文件里有学生姓名和错题内容，注意保管，别发到公开群里。
+      </div>
+    </details>
 
     <form class="wrong-form" id="wrongForm">
       <div class="field">
@@ -166,11 +187,25 @@
     <div class="section-title" style="justify-content:space-between">
       <span style="display:flex;align-items:center;gap:10px">错题列表 <span class="chip" id="wrongCount">0 条</span></span>
     </div>
-    <div class="btn-row" style="margin-bottom:14px">
-      <button class="btn sm" id="exportWrong">导出为文本</button>
+
+    <div class="stat-row" id="wrongStats" hidden>
+      <div class="stat"><b id="wsTotal">0</b><span>错题总数</span></div>
+      <div class="stat"><b id="wsStudents">0</b><span>学生人数</span></div>
+      <div class="stat"><b id="wsTodo">0</b><span>待复习</span></div>
+      <div class="stat"><b id="wsDone">0</b><span>已掌握</span></div>
+    </div>
+
+    <div class="btn-row" style="margin:14px 0">
+      <button class="btn sm primary" id="exportJson">导出发给老师</button>
+      <button class="btn sm" id="importJson">导入学生错题</button>
+      <input type="file" id="importFile" accept=".json,application/json" multiple hidden>
+      <button class="btn sm" id="exportTxt">导出为文本</button>
       <button class="btn sm" id="clearDone">清除已掌握</button>
       <button class="btn sm danger" id="clearAll">清空全部</button>
     </div>
+
+    <div class="filter-bar" id="wrongFilter"></div>
+
     <div id="wrongList"></div>
   </section>
 

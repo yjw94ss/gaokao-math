@@ -18,7 +18,9 @@
     kb: CHAPTERS[0].id,
     exCh: 'all',
     pracType: 'all',
-    pracCh: 'all'
+    pracCh: 'all',
+    wOwner: 'all',
+    wStatus: 'all'
   };
 
   /* ---------------- 工具 ---------------- */
@@ -264,6 +266,30 @@
 
   /* ---------------- 错题本 ---------------- */
   var WKEY = 'gkm_wrong_v1';
+  var OWNER_KEY = 'gkm_owner_v1';
+
+  function getOwner() {
+    try { return localStorage.getItem(OWNER_KEY) || ''; } catch (e) { return ''; }
+  }
+  function setOwner(n) {
+    try { localStorage.setItem(OWNER_KEY, n); } catch (e) {}
+  }
+  function ownerOf(w) { return w.owner || '未标注'; }
+
+  function stamp() {
+    var d = new Date(), p = function (n) { return n < 10 ? '0' + n : '' + n; };
+    return d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate());
+  }
+  function download(text, filename, mime) {
+    var blob = new Blob([text], { type: (mime || 'text/plain') + ';charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  }
 
   function loadWrong() {
     try {
@@ -282,28 +308,97 @@
     }
   }
 
+  function ownerCounts(arr) {
+    var m = {};
+    arr.forEach(function (w) {
+      var o = ownerOf(w);
+      m[o] = (m[o] || 0) + 1;
+    });
+    return m;
+  }
+
   function renderWrong() {
+    /* 章节下拉（只建一次） */
     var sel = $('#wch');
     if (sel.options.length <= 1) {
       sel.innerHTML = '<option value="">未分类</option>' +
         CHAPTERS.map(function (c) { return '<option value="' + c.id + '">' + esc(c.name) + '</option>'; }).join('');
     }
 
-    var arr = loadWrong();
-    $('#wrongCount').textContent = arr.length + ' 条';
+    /* 当前使用者回填（别打断正在输入的人） */
+    var nameInput = $('#ownerName');
+    if (document.activeElement !== nameInput) nameInput.value = getOwner();
+    var me = getOwner();
+    $('#ownerHint').textContent = me ? '录入归属：' + me : '未设置（新错题会标成「未标注」）';
+
+    var all = loadWrong();
+    var counts = ownerCounts(all);
+    var owners = Object.keys(counts).sort();
+    var todo = all.filter(function (w) { return !w.done; }).length;
+
+    /* 汇总统计 */
+    if (all.length) {
+      $('#wrongStats').hidden = false;
+      $('#wsTotal').textContent = all.length;
+      $('#wsStudents').textContent = owners.length;
+      $('#wsTodo').textContent = todo;
+      $('#wsDone').textContent = all.length - todo;
+    } else {
+      $('#wrongStats').hidden = true;
+    }
+    $('#wrongCount').textContent = all.length + ' 条';
+
+    /* 筛选栏 */
+    var statusBtns = [
+      { id: 'all', name: '全部' },
+      { id: 'todo', name: '待复习' },
+      { id: 'done', name: '已掌握' }
+    ];
+    $('#wrongFilter').innerHTML =
+      '<select id="wOwnerSel" class="fbtn" style="padding:6px 10px">' +
+        '<option value="all">全部学生（' + owners.length + ' 人）</option>' +
+        owners.map(function (o, i) {
+          return '<option value="' + i + '"' + (o === state.wOwner ? ' selected' : '') + '>' +
+                 esc(o) + '（' + counts[o] + '）</option>';
+        }).join('') +
+      '</select>' +
+      statusBtns.map(function (s) {
+        return '<button class="fbtn" data-s="' + s.id + '" aria-pressed="' +
+               String(s.id === state.wStatus) + '">' + s.name + '</button>';
+      }).join('');
+
+    $$('#wrongFilter .fbtn[data-s]').forEach(function (b) {
+      b.addEventListener('click', function () { state.wStatus = b.dataset.s; renderWrong(); });
+    });
+    var os = $('#wOwnerSel');
+    os.addEventListener('change', function () {
+      state.wOwner = os.value === 'all' ? 'all' : owners[+os.value];
+      renderWrong();
+    });
+
+    /* 过滤 + 排序 */
+    var arr = all.filter(function (w) {
+      if (state.wOwner !== 'all' && ownerOf(w) !== state.wOwner) return false;
+      if (state.wStatus === 'todo' && w.done) return false;
+      if (state.wStatus === 'done' && !w.done) return false;
+      return true;
+    });
+    arr.sort(function (a, b) { return (a.done ? 1 : 0) - (b.done ? 1 : 0) || b.ts - a.ts; });
 
     if (!arr.length) {
-      $('#wrongList').innerHTML = '<div class="empty"><div class="big">📕</div>' +
-        '还没有收录错题。<br>把最近做错的题填进上面的表单，错因写清楚，复习时最有用。</div>';
+      $('#wrongList').innerHTML = all.length
+        ? '<div class="empty"><div class="big">🔍</div>当前筛选条件下没有错题</div>'
+        : '<div class="empty"><div class="big">📕</div>还没有收录错题。<br>' +
+          '<b>学生</b>：填上名字后把错题录进来，再点「导出发给老师」。<br>' +
+          '<b>老师</b>：直接点「导入学生错题」，把收到的文件合进来。</div>';
       return;
     }
-
-    arr.sort(function (a, b) { return (a.done ? 1 : 0) - (b.done ? 1 : 0) || b.ts - a.ts; });
 
     $('#wrongList').innerHTML = arr.map(function (w) {
       return '' +
         '<div class="wrong-item' + (w.done ? ' done' : '') + '">' +
           '<div class="wrong-head">' +
+            '<span class="chip accent">' + esc(ownerOf(w)) + '</span>' +
             (w.ch ? '<span class="chip primary">' + esc(chapterName(w.ch)) + '</span>' : '<span class="chip">未分类</span>') +
             (w.src ? '<span class="src">' + esc(w.src) + '</span>' : '') +
             '<span class="chip ' + (w.done ? 'ok' : 'err') + '">' + (w.done ? '已掌握' : '待复习') + '</span>' +
@@ -357,7 +452,71 @@
     return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
   }
 
+  /* 导入学生导出的 json，按 id 去重 */
+  function importFiles(files) {
+    var list = loadWrong();
+    var seen = {};
+    list.forEach(function (w) { seen[w.id] = true; });
+
+    var added = 0, dup = 0, bad = 0, pending = files.length;
+
+    function done() {
+      if (--pending > 0) return;
+      if (added) saveWrong(list);
+      renderWrong();
+      var msg = '导入完成：新增 ' + added + ' 条';
+      if (dup) msg += '，跳过重复 ' + dup + ' 条';
+      if (bad) msg += '，' + bad + ' 个文件读不了';
+      toast(msg);
+    }
+
+    files.forEach(function (f) {
+      var reader = new FileReader();
+      reader.onload = function () {
+        try {
+          var data = JSON.parse(reader.result);
+          var items = Array.isArray(data) ? data
+                    : (data && Array.isArray(data.items) ? data.items : null);
+          if (!items) throw new Error('格式不对');
+          var fallback = (data && data.owner) ? String(data.owner).slice(0, 20) : '未标注';
+          items.forEach(function (it) {
+            if (!it || !it.q) { dup++; return; }
+            var id = it.id || ('w' + Date.now() + Math.random().toString(36).slice(2, 7));
+            if (seen[id]) { dup++; return; }
+            seen[id] = true;
+            list.push({
+              id: id,
+              owner: it.owner ? String(it.owner).slice(0, 20) : fallback,
+              q: String(it.q),
+              src: it.src ? String(it.src) : '',
+              ch: it.ch ? String(it.ch) : '',
+              cause: it.cause ? String(it.cause) : '',
+              fix: it.fix ? String(it.fix) : '',
+              done: !!it.done,
+              ts: it.ts || Date.now()
+            });
+            added++;
+          });
+        } catch (e) { bad++; }
+        done();
+      };
+      reader.onerror = function () { bad++; done(); };
+      reader.readAsText(f, 'utf-8');
+    });
+  }
+
   function initWrong() {
+    /* 当前使用者 */
+    var nameInput = $('#ownerName');
+    nameInput.value = getOwner();
+    nameInput.addEventListener('input', function () {
+      setOwner(nameInput.value.trim());
+      var v = nameInput.value.trim();
+      $('#ownerHint').textContent = v ? '录入归属：' + v : '未设置（新错题会标成「未标注」）';
+    });
+    nameInput.addEventListener('change', function () { renderWrong(); });
+
+    /* 录入 */
     $('#wrongForm').addEventListener('submit', function (e) {
       e.preventDefault();
       var q = $('#wq').value.trim();
@@ -365,6 +524,7 @@
       var list = loadWrong();
       list.push({
         id: 'w' + Date.now() + Math.random().toString(36).slice(2, 6),
+        owner: getOwner() || '未标注',
         q: q,
         src: $('#wsrc').value.trim(),
         ch: $('#wch').value,
@@ -376,16 +536,49 @@
       if (saveWrong(list)) {
         this.reset();
         renderWrong();
-        toast('已加入错题本');
+        toast(getOwner() ? '已加入错题本' : '已加入。建议填上「当前使用者」，老师才好认领');
       }
     });
 
-    $('#exportWrong').addEventListener('click', function () {
+    /* 导出发给老师（结构化 json，给程序读） */
+    $('#exportJson').addEventListener('click', function () {
+      var arr = loadWrong();
+      if (!arr.length) { toast('还没有错题，先录几道再导出'); return; }
+      var owner = getOwner();
+      if (!owner) {
+        toast('请先在「当前使用者」填上你的名字，老师才知道是谁的');
+        nameInput.focus();
+        return;
+      }
+      var payload = {
+        app: 'gaokao-math',
+        type: 'wrong-book',
+        version: 1,
+        owner: owner,
+        exportedAt: new Date().toISOString(),
+        count: arr.length,
+        items: arr
+      };
+      download(JSON.stringify(payload, null, 2),
+        '数学错题-' + owner + '-' + stamp() + '.json', 'application/json');
+      toast('已导出 ' + arr.length + ' 条，把文件发给老师');
+    });
+
+    /* 导入学生错题（支持一次选多个文件） */
+    $('#importJson').addEventListener('click', function () { $('#importFile').click(); });
+    $('#importFile').addEventListener('change', function () {
+      var files = Array.prototype.slice.call(this.files || []);
+      this.value = '';
+      if (files.length) importFiles(files);
+    });
+
+    /* 导出为文本（打印复习用） */
+    $('#exportTxt').addEventListener('click', function () {
       var arr = loadWrong();
       if (!arr.length) { toast('错题本还是空的'); return; }
       var lines = ['高三数学错题本  导出时间：' + new Date().toLocaleString('zh-CN'), ''];
       arr.forEach(function (w, i) {
-        lines.push('【' + (i + 1) + '】' + (w.done ? '[已掌握] ' : ''));
+        lines.push('【' + (i + 1) + '】' + ownerOf(w) + (w.done ? '  [已掌握]' : ''));
         if (w.src)   lines.push('来源：' + w.src);
         lines.push('章节：' + (w.ch ? chapterName(w.ch) : '未分类'));
         lines.push('题目：' + w.q);
@@ -393,14 +586,7 @@
         if (w.fix)   lines.push('正解：' + w.fix);
         lines.push('');
       });
-      var blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' });
-      var a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = '高三数学错题本.txt';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+      download(lines.join('\n'), '高三数学错题本-' + stamp() + '.txt');
       toast('已导出为文本文件');
     });
 
